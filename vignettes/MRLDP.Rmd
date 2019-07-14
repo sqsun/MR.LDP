@@ -179,6 +179,5 @@ resH0 = MRLDP_SimPXvb(gammah, Gammah, sqrt(sg2), sqrt(sG2), gamma, alpha,  beta0
 tstat = 2*(resHb$tstat - resH0$tstat);
 pval = pchisq(tstat, 1, lower.tail = F);
 beta_hat = resHb$beta0;
-
 ```
 
