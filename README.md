@@ -1,6 +1,8 @@
 MR.LDP
 =======
+
 MR.LDP is a package for two-sample Mendelian randomization for GWAS summary statistics accounting linkage disequilibrium and horizontal pleiotropy(MR-LDP).
+
 Installation
 ============
 ```
