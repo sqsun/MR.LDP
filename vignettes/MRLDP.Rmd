@@ -18,7 +18,7 @@ This vignette provides an introduction to the `MR.LDP` package. R package `MR.LD
 The package can be installed with the following commands:
 ```
 library(devtools);
-install_github("QingCheng/MR.LDP");
+install_github("QingCheng0218/MR.LDP");
 ```
 Load the package using the following command:
 ```{r}
