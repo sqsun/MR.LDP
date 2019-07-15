@@ -15,16 +15,24 @@ knitr::opts_chunk$set(echo = TRUE)
 ### Introduction
 This vignette provides an introduction to the `MR.LDP` package. R package `MR.LDP` implements MR-LDP, a two-sample Mendelian randomization for GWAS summary statistics accounting
   linkage disequilibrium and horizontal pleiotropy.
-The package can be installed with the command:
+The package can be installed with the following commands:
+```
+library(devtools);
+install_github("QingCheng/MR.LDP");
+```
+Load the package using the following command:
+```{r}
+library(MR.LDP);
+```
 
 ### Fit MR-LDP using simulated data
 
 We first generate genotype data using function _genRawGeno_:
 ```{r}
-library(MR.LDP);
 library("mvtnorm");
 library("PDSCE");
 
+set.seed(2019);
 genRawGeno <- function(maf, L, M, rho, n){
   SIGMA = matrix(nrow=M,ncol=M)
   for (i in 1:M){
@@ -36,7 +44,7 @@ genRawGeno <- function(maf, L, M, rho, n){
   nsnp = L*M;
   X = NULL;
   for ( l in 1:L ){
-    #set.seed(1000);
+    
     index = (M*(l-1)+1): (M*l);
     AAprob = maf[index]^2.;
     Aaprob = 2*maf[index]*(1-maf[index]);
@@ -53,33 +61,38 @@ genRawGeno <- function(maf, L, M, rho, n){
   }
   return(X)
 }
-rho = 0.4; h2z = 0.05; h2y = 0.1;
+
+rho = 0.4; 
 L = 1; M = 50; p = M*L; m = p; Alrate = 1;
 
 
 n1 = 20000; n2 = 20000; n3 = 2500; lam = 0.055;
 maf = runif(p, 0.05, 0.5);
-x = genRawGeno(maf, L, M, rho, n1 + n2 + n3);
-b0 = 0.1; 
-x1 = x[1:n1,];
-x2 = x[(n1+1):(n1+n2),];
-x12 = x[1:(n1+n2),];
-x3 = x[(n1+n2+1):(n1+n2+n3),];
+G = genRawGeno(maf, L, M, rho, n1 + n2 + n3);
+
+G1 = G[1:n1,];
+G2 = G[(n1+1):(n1+n2),];
+G12 = G[1:(n1+n2),];
+G3 = G[(n1+n2+1):(n1+n2+n3),];
 ```
 Estimate the covariance matrix using function _pdsoft_:
 ```{r}
-R0 = cor(x3);
+R0 = cor(G3);
 R = pdsoft(R0, lam)$theta;
 diag(R) = rep(1, p);
 mask = kronecker(diag(L),matrix(1,M,M));
 R = R*mask;
 ```
-Generate the exposure data(y) and outcome data(z).
+Generate the exposure data(y) and outcome data(z) with prespecified indirect($h_y^2$) and direct($h_{z}^2$) heritability based on 
+\begin{eqnarray*}
+\mathbf{y} = \mathbf{G}_1\mathbf{\gamma} +\mathbf{U}_x  \mathbf{\eta}_x  + \mathbf{e}_1,\quad \mathbf{z} = \beta_0 \mathbf{x} + \mathbf{G}_2 \mathbf{\alpha} +  \mathbf{U}_y\mathbf{\eta}_y+ \mathbf{e}_2,
+\end{eqnarray*}
+
 ```{r}
-q = 50
+h2z <- 0.05; h2y <- 0.1; b0 <- 0.1; q <- 50;
 u = matrix(rnorm( (n1+n2) * q),ncol=q);
 
-sigma2g = 0.005;
+sigma2g <- 0.005;
 gamma.nz = rnorm(m)*sqrt(sigma2g);
 indx = sample(1:p,m);
 gamma = numeric(p);
@@ -92,15 +105,15 @@ uby = u%*%by; ubz = u%*%bz;
 uby = uby/sqrt(as.numeric(var(uby)/0.6));
 ubz = ubz/sqrt(as.numeric(var(ubz)/0.2));
 
-x12g = x12%*%gamma;
+G12g = G12%*%gamma;
 
 if(b0!=0){
   h2ga = (h2y *( 1 + b0^2))/(b0^2 * (1 - h2y));
-  gamma0 = gamma/sqrt(as.numeric(var(x12g)/h2ga));
-  x12g = x12%*%gamma0;
+  gamma0 = gamma/sqrt(as.numeric(var(G12g)/h2ga));
+  G12g = G12%*%gamma0;
 }
 
-yall = x12g + uby + rnorm(n1+n2)*as.numeric(sqrt(1-var(uby)));
+yall = G12g + uby + rnorm(n1+n2)*as.numeric(sqrt(1-var(uby)));
 
 # The direct effects on Z
 h2yb = var(b0*yall);
@@ -109,7 +122,7 @@ h2al = (h2z + h2z*h2yb)/(1 - h2z)
 sigma2a <- 0.005;
 if(h2z==0){
   alpha0 = rep(0, m);
-  x12a = x12%*%alpha0;
+  G12a = G12%*%alpha0;
 }else{
   alno = floor(p*Alrate);
   alpha.nz <- rnorm(alno)*sqrt(sigma2a);
@@ -118,32 +131,32 @@ if(h2z==0){
   alpha = numeric(p);
   alpha[indxAL] = alpha.nz;
   
-  x12a = x12%*%alpha;
-  alpha0 = alpha/sqrt(as.numeric(var(x12a)/(h2al)));
-  x12a = x12%*%alpha0;
+  G12a = G12%*%alpha;
+  alpha0 = alpha/sqrt(as.numeric(var(G12a)/(h2al)));
+  G12a = G12%*%alpha0;
 }
-# ------------------------------------------------------------------------
+
 resz = ubz + rnorm(n1+n2)*as.numeric(sqrt(1-var(ubz)));
-zall = b0*yall  + x12a +  resz;
-H2a.res <- var(x12a)/var(zall);
-H2g.res <- var(b0*x12g)/var(zall);
+zall = b0*yall  + G12a +  resz;
+H2a.res <- var(G12a)/var(zall);
+H2g.res <- var(b0*G12g)/var(zall);
 
 y = yall[1:n1];
 z = zall[(n1+1):(n1+n2)];
 
 ```
-create the summary statistics
+We then conduct single-variant analysis to obtain the summary statistics.
 ```{r}
 gammahall = numeric(p); Gammahall = numeric(p);
 sg2all = numeric(p); sG2all = numeric(p);
 pval = numeric(p);
 for (i in 1:p){
-  fm = lm(y~1+x1[,i]);
+  fm = lm(y~1+G1[,i]);
   gammahall[i] = summary(fm)$coefficients[2,1];
   sg2all[i] = summary(fm)$coefficients[2,2]^2;
   pval[i] = summary(fm)$coefficients[2,4];
   
-  fm = lm(z~1+x2[,i]);
+  fm = lm(z~1+G2[,i]);
   Gammahall[i] = summary(fm)$coefficients[2,1];
   sG2all[i] = summary(fm)$coefficients[2,2]^2;
 }
@@ -160,21 +173,25 @@ Gammah = Gammahall[sig.indx];
 
 Initilize the parameters for MR-LDP algorithm.
 ```{r}
-epsStopLogLik = 1e-7; maxIter = 10000;
-beta0 = 0; sgga2 = 1;
+epsStopLogLik <- 1e-7; maxIter <- 10000;
+beta0 <- 0; sgga2 <- 1;
 agm <- bgm <- aal <- bal <- 0.001;
 gamma <- rep(0.01, p);
 alpha <- rep(0.01, p);
 sgga2 <- 1;
 sgal2 <- 1;
-model = 2
+model <- 2
 
 ```
-Fit MR-LDP w/ and w/o constraint that beta = 0 as:
+Fit MR-LDP w/ and w/o constraint that $\beta = 0$ as:
 ```{r}
-resHb = MRLDP_SimPXvb(gammah, Gammah, sqrt(sg2), sqrt(sG2), gamma, alpha,  beta0, sgga2, sgal2, R, constr = 0, epsStopLogLik, maxIter, model);
+resHb = MRLDP_SimPXvb(gammah, Gammah, sqrt(sg2), sqrt(sG2), 
+                      gamma, alpha,  beta0, sgga2, sgal2, R, 
+                      constr = 0, epsStopLogLik, maxIter, model);
 
-resH0 = MRLDP_SimPXvb(gammah, Gammah, sqrt(sg2), sqrt(sG2), gamma, alpha,  beta0, sgga2, sgal2, R, constr = 1, epsStopLogLik, maxIter, model);
+resH0 = MRLDP_SimPXvb(gammah, Gammah, sqrt(sg2), sqrt(sG2), 
+                      gamma, alpha,  beta0, sgga2, sgal2, R, 
+                      constr = 1, epsStopLogLik, maxIter, model);
 
 tstat = 2*(resHb$tstat - resH0$tstat);
 pval = pchisq(tstat, 1, lower.tail = F);

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Qing Cheng and Jin Liu" />
 
-<meta name="date" content="2019-07-14" />
+<meta name="date" content="2019-07-15" />
 
 <title>MR-LDP: a two-sample Mendelian randomization for GWAS summary statistics accounting linkage disequilibrium and horizontal pleiotropy</title>
 
@@ -98,6 +98,9 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
+summary {
+  display: list-item;
+}
 </style>
 
 
@@ -105,14 +108,74 @@ button.code-folding-btn:focus {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
 </script>
 
 <!-- code folding -->
-
 
 
 
@@ -124,22 +187,27 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">MR-LDP: a two-sample Mendelian randomization for GWAS summary statistics accounting linkage disequilibrium and horizontal pleiotropy</h1>
 <h4 class="author"><em>Qing Cheng and Jin Liu</em></h4>
-<h4 class="date"><em>2019-07-14</em></h4>
+<h4 class="date"><em>2019-07-15</em></h4>
 
 </div>
 
 
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
-<p>This vignette provides an introduction to the <code>MR.LDP</code> package. R package <code>MR.LDP</code> implements MR-LDP, a two-sample Mendelian randomization for GWAS summary statistics accounting linkage disequilibrium and horizontal pleiotropy. The package can be installed with the command:</p>
+<p>This vignette provides an introduction to the <code>MR.LDP</code> package. R package <code>MR.LDP</code> implements MR-LDP, a two-sample Mendelian randomization for GWAS summary statistics accounting linkage disequilibrium and horizontal pleiotropy. The package can be installed with the following commands:</p>
+<pre><code>library(devtools);
+install_github(&quot;QingCheng/MR.LDP&quot;);</code></pre>
+<p>Load the package using the following command:</p>
+<pre class="r"><code>library(MR.LDP);</code></pre>
 </div>
 <div id="fit-mr-ldp-using-simulated-data" class="section level3">
 <h3>Fit MR-LDP using simulated data</h3>
 <p>We first generate genotype data using function <em>genRawGeno</em>:</p>
-<pre class="r"><code>library(MR.LDP);
-library(&quot;mvtnorm&quot;);
-library(&quot;PDSCE&quot;);
-
+<pre class="r"><code>library(&quot;mvtnorm&quot;);</code></pre>
+<pre><code>## Warning: package 'mvtnorm' was built under R version 3.5.2</code></pre>
+<pre class="r"><code>library(&quot;PDSCE&quot;);</code></pre>
+<pre><code>## Warning: package 'PDSCE' was built under R version 3.5.2</code></pre>
+<pre class="r"><code>set.seed(2019);
 genRawGeno &lt;- function(maf, L, M, rho, n){
   SIGMA = matrix(nrow=M,ncol=M)
   for (i in 1:M){
@@ -151,7 +219,7 @@ genRawGeno &lt;- function(maf, L, M, rho, n){
   nsnp = L*M;
   X = NULL;
   for ( l in 1:L ){
-    #set.seed(1000);
+    
     index = (M*(l-1)+1): (M*l);
     AAprob = maf[index]^2.;
     Aaprob = 2*maf[index]*(1-maf[index]);
@@ -168,29 +236,33 @@ genRawGeno &lt;- function(maf, L, M, rho, n){
   }
   return(X)
 }
-rho = 0.4; h2z = 0.05; h2y = 0.1;
+
+rho = 0.4; 
 L = 1; M = 50; p = M*L; m = p; Alrate = 1;
 
 
 n1 = 20000; n2 = 20000; n3 = 2500; lam = 0.055;
 maf = runif(p, 0.05, 0.5);
-x = genRawGeno(maf, L, M, rho, n1 + n2 + n3);
-b0 = 0.1; 
-x1 = x[1:n1,];
-x2 = x[(n1+1):(n1+n2),];
-x12 = x[1:(n1+n2),];
-x3 = x[(n1+n2+1):(n1+n2+n3),];</code></pre>
+G = genRawGeno(maf, L, M, rho, n1 + n2 + n3);
+
+G1 = G[1:n1,];
+G2 = G[(n1+1):(n1+n2),];
+G12 = G[1:(n1+n2),];
+G3 = G[(n1+n2+1):(n1+n2+n3),];</code></pre>
 <p>Estimate the covariance matrix using function <em>pdsoft</em>:</p>
-<pre class="r"><code>R0 = cor(x3);
+<pre class="r"><code>R0 = cor(G3);
 R = pdsoft(R0, lam)$theta;
 diag(R) = rep(1, p);
 mask = kronecker(diag(L),matrix(1,M,M));
 R = R*mask;</code></pre>
-<p>Generate the exposure data(y) and outcome data(z).</p>
-<pre class="r"><code>q = 50
+Generate the exposure data(y) and outcome data(z) with prespecified indirect(<span class="math inline">\(h_y^2\)</span>) and direct(<span class="math inline">\(h_{z}^2\)</span>) heritability based on
+<span class="math display">\[\begin{eqnarray*}
+\mathbf{y} = \mathbf{G}_1\mathbf{\gamma} +\mathbf{U}_x  \mathbf{\eta}_x  + \mathbf{e}_1,\quad \mathbf{z} = \beta_0 \mathbf{x} + \mathbf{G}_2 \mathbf{\alpha} +  \mathbf{U}_y\mathbf{\eta}_y+ \mathbf{e}_2,
+\end{eqnarray*}\]</span>
+<pre class="r"><code>h2z &lt;- 0.05; h2y &lt;- 0.1; b0 &lt;- 0.1; q &lt;- 50;
 u = matrix(rnorm( (n1+n2) * q),ncol=q);
 
-sigma2g = 0.005;
+sigma2g &lt;- 0.005;
 gamma.nz = rnorm(m)*sqrt(sigma2g);
 indx = sample(1:p,m);
 gamma = numeric(p);
@@ -203,15 +275,15 @@ uby = u%*%by; ubz = u%*%bz;
 uby = uby/sqrt(as.numeric(var(uby)/0.6));
 ubz = ubz/sqrt(as.numeric(var(ubz)/0.2));
 
-x12g = x12%*%gamma;
+G12g = G12%*%gamma;
 
 if(b0!=0){
   h2ga = (h2y *( 1 + b0^2))/(b0^2 * (1 - h2y));
-  gamma0 = gamma/sqrt(as.numeric(var(x12g)/h2ga));
-  x12g = x12%*%gamma0;
+  gamma0 = gamma/sqrt(as.numeric(var(G12g)/h2ga));
+  G12g = G12%*%gamma0;
 }
 
-yall = x12g + uby + rnorm(n1+n2)*as.numeric(sqrt(1-var(uby)));
+yall = G12g + uby + rnorm(n1+n2)*as.numeric(sqrt(1-var(uby)));
 
 # The direct effects on Z
 h2yb = var(b0*yall);
@@ -220,7 +292,7 @@ h2al = (h2z + h2z*h2yb)/(1 - h2z)
 sigma2a &lt;- 0.005;
 if(h2z==0){
   alpha0 = rep(0, m);
-  x12a = x12%*%alpha0;
+  G12a = G12%*%alpha0;
 }else{
   alno = floor(p*Alrate);
   alpha.nz &lt;- rnorm(alno)*sqrt(sigma2a);
@@ -229,29 +301,29 @@ if(h2z==0){
   alpha = numeric(p);
   alpha[indxAL] = alpha.nz;
   
-  x12a = x12%*%alpha;
-  alpha0 = alpha/sqrt(as.numeric(var(x12a)/(h2al)));
-  x12a = x12%*%alpha0;
+  G12a = G12%*%alpha;
+  alpha0 = alpha/sqrt(as.numeric(var(G12a)/(h2al)));
+  G12a = G12%*%alpha0;
 }
-# ------------------------------------------------------------------------
+
 resz = ubz + rnorm(n1+n2)*as.numeric(sqrt(1-var(ubz)));
-zall = b0*yall  + x12a +  resz;
-H2a.res &lt;- var(x12a)/var(zall);
-H2g.res &lt;- var(b0*x12g)/var(zall);
+zall = b0*yall  + G12a +  resz;
+H2a.res &lt;- var(G12a)/var(zall);
+H2g.res &lt;- var(b0*G12g)/var(zall);
 
 y = yall[1:n1];
 z = zall[(n1+1):(n1+n2)];</code></pre>
-<p>create the summary statistics</p>
+<p>We then conduct single-variant analysis to obtain the summary statistics.</p>
 <pre class="r"><code>gammahall = numeric(p); Gammahall = numeric(p);
 sg2all = numeric(p); sG2all = numeric(p);
 pval = numeric(p);
 for (i in 1:p){
-  fm = lm(y~1+x1[,i]);
+  fm = lm(y~1+G1[,i]);
   gammahall[i] = summary(fm)$coefficients[2,1];
   sg2all[i] = summary(fm)$coefficients[2,2]^2;
   pval[i] = summary(fm)$coefficients[2,4];
   
-  fm = lm(z~1+x2[,i]);
+  fm = lm(z~1+G2[,i]);
   Gammahall[i] = summary(fm)$coefficients[2,1];
   sG2all[i] = summary(fm)$coefficients[2,2]^2;
 }
@@ -264,18 +336,22 @@ sG2 = sG2all[sig.indx];
 gammah = gammahall[sig.indx];
 Gammah = Gammahall[sig.indx];</code></pre>
 <p>Initilize the parameters for MR-LDP algorithm.</p>
-<pre class="r"><code>epsStopLogLik = 1e-7; maxIter = 10000;
-beta0 = 0; sgga2 = 1;
+<pre class="r"><code>epsStopLogLik &lt;- 1e-7; maxIter &lt;- 10000;
+beta0 &lt;- 0; sgga2 &lt;- 1;
 agm &lt;- bgm &lt;- aal &lt;- bal &lt;- 0.001;
 gamma &lt;- rep(0.01, p);
 alpha &lt;- rep(0.01, p);
 sgga2 &lt;- 1;
 sgal2 &lt;- 1;
-model = 2</code></pre>
-<p>Fit MR-LDP w/ and w/o constraint that beta = 0 as:</p>
-<pre class="r"><code>resHb = MRLDP_SimPXvb(gammah, Gammah, sqrt(sg2), sqrt(sG2), gamma, alpha,  beta0, sgga2, sgal2, R, constr = 0, epsStopLogLik, maxIter, model);
+model &lt;- 2</code></pre>
+<p>Fit MR-LDP w/ and w/o constraint that <span class="math inline">\(\beta = 0\)</span> as:</p>
+<pre class="r"><code>resHb = MRLDP_SimPXvb(gammah, Gammah, sqrt(sg2), sqrt(sG2), 
+                      gamma, alpha,  beta0, sgga2, sgal2, R, 
+                      constr = 0, epsStopLogLik, maxIter, model);
 
-resH0 = MRLDP_SimPXvb(gammah, Gammah, sqrt(sg2), sqrt(sG2), gamma, alpha,  beta0, sgga2, sgal2, R, constr = 1, epsStopLogLik, maxIter, model);
+resH0 = MRLDP_SimPXvb(gammah, Gammah, sqrt(sg2), sqrt(sG2), 
+                      gamma, alpha,  beta0, sgga2, sgal2, R, 
+                      constr = 1, epsStopLogLik, maxIter, model);
 
 tstat = 2*(resHb$tstat - resH0$tstat);
 pval = pchisq(tstat, 1, lower.tail = F);
