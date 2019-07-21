@@ -77,6 +77,10 @@ MRLDP_RealPXvb <- function(bp, chr, avbIndex, block_file, stringname3, bh1, bh2,
     .Call(`_MR_LDP_MRLDP_RealPXvb`, bp, chr, avbIndex, block_file, stringname3, bh1, bh2, se1, se2, gamma, alpha, beta0, sgga2, sgal2, coreNum, lam, constr, epsStopLogLik, maxIter, model)
 }
 
+MRLDP_RealPXvb_block <- function(bp, chr, avbIndex, block_file, stringname3, bh1, bh2, se1, se2, gamma, alpha, beta0, sgga2, sgal2, coreNum, lam, constr, epsStopLogLik, maxIter, model) {
+    .Call(`_MR_LDP_MRLDP_RealPXvb_block`, bp, chr, avbIndex, block_file, stringname3, bh1, bh2, se1, se2, gamma, alpha, beta0, sgga2, sgal2, coreNum, lam, constr, epsStopLogLik, maxIter, model)
+}
+
 MRLDP_RealParPXvb <- function(bp, chr, avbIndex, block_file, stringname3, bh1, bh2, se1, se2, gamma, alpha, beta0, sgga2, sgal2, coreNum, lam, constr, epsStopLogLik, maxIter, model) {
     .Call(`_MR_LDP_MRLDP_RealParPXvb`, bp, chr, avbIndex, block_file, stringname3, bh1, bh2, se1, se2, gamma, alpha, beta0, sgga2, sgal2, coreNum, lam, constr, epsStopLogLik, maxIter, model)
 }
@@ -123,6 +127,14 @@ VBMgM2 <- function(bh1, bh2, se1, se2, mu, sgga2, sgal2, beta0, R, constr, epsSt
 
 MgMgib2 <- function(gammah, Gammah, sg2, sG2, mu, sgga2, sgal2, beta0, R, IterMax, agm, bgm) {
     .Call(`_MR_LDP_MgMgib2`, gammah, Gammah, sg2, sG2, mu, sgga2, sgal2, beta0, R, IterMax, agm, bgm)
+}
+
+PXvbfunM1_block <- function(F4Rblock, block_inf, nblocks, bh1, bh2, se1, se2, mu, sgga2, beta0, constr, epsStopLogLik, maxIter) {
+    .Call(`_MR_LDP_PXvbfunM1_block`, F4Rblock, block_inf, nblocks, bh1, bh2, se1, se2, mu, sgga2, beta0, constr, epsStopLogLik, maxIter)
+}
+
+PXvbfunM2_block <- function(F4Rblock, block_inf, nblocks, bh1, bh2, se1, se2, mu, muA, sgga2, sgal2, beta0, constr, epsStopLogLik, maxIter) {
+    .Call(`_MR_LDP_PXvbfunM2_block`, F4Rblock, block_inf, nblocks, bh1, bh2, se1, se2, mu, muA, sgga2, sgal2, beta0, constr, epsStopLogLik, maxIter)
 }
 
 getLineNum <- function(filename) {
