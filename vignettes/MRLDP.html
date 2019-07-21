@@ -11,7 +11,7 @@
 
 <meta name="author" content="Qing Cheng and Jin Liu" />
 
-<meta name="date" content="2019-07-15" />
+<meta name="date" content="2019-07-21" />
 
 <title>MR-LDP: a two-sample Mendelian randomization for GWAS summary statistics accounting linkage disequilibrium and horizontal pleiotropy</title>
 
@@ -187,7 +187,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">MR-LDP: a two-sample Mendelian randomization for GWAS summary statistics accounting linkage disequilibrium and horizontal pleiotropy</h1>
 <h4 class="author"><em>Qing Cheng and Jin Liu</em></h4>
-<h4 class="date"><em>2019-07-15</em></h4>
+<h4 class="date"><em>2019-07-21</em></h4>
 
 </div>
 
@@ -337,13 +337,12 @@ gammah = gammahall[sig.indx];
 Gammah = Gammahall[sig.indx];</code></pre>
 <p>Initilize the parameters for MR-LDP algorithm.</p>
 <pre class="r"><code>epsStopLogLik &lt;- 1e-7; maxIter &lt;- 10000;
-beta0 &lt;- 0; sgga2 &lt;- 1;
-agm &lt;- bgm &lt;- aal &lt;- bal &lt;- 0.001;
-gamma &lt;- rep(0.01, p);
-alpha &lt;- rep(0.01, p);
-sgga2 &lt;- 1;
-sgal2 &lt;- 1;
-model &lt;- 2</code></pre>
+beta0 &lt;- 0; 
+gamma &lt;- rep(0, p);
+alpha &lt;- rep(0, p);
+sgga2 &lt;- 0.01;
+sgal2 &lt;- 0.01;
+model &lt;- 2;</code></pre>
 <p>Fit MR-LDP w/ and w/o constraint that <span class="math inline">\(\beta = 0\)</span> as:</p>
 <pre class="r"><code>resHb = MRLDP_SimPXvb(gammah, Gammah, sqrt(sg2), sqrt(sG2), 
                       gamma, alpha,  beta0, sgga2, sgal2, R, 

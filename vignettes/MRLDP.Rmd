@@ -174,13 +174,12 @@ Gammah = Gammahall[sig.indx];
 Initilize the parameters for MR-LDP algorithm.
 ```{r}
 epsStopLogLik <- 1e-7; maxIter <- 10000;
-beta0 <- 0; sgga2 <- 1;
-agm <- bgm <- aal <- bal <- 0.001;
-gamma <- rep(0.01, p);
-alpha <- rep(0.01, p);
-sgga2 <- 1;
-sgal2 <- 1;
-model <- 2
+beta0 <- 0; 
+gamma <- rep(0, p);
+alpha <- rep(0, p);
+sgga2 <- 0.01;
+sgal2 <- 0.01;
+model <- 2;
 
 ```
 Fit MR-LDP w/ and w/o constraint that $\beta = 0$ as:
