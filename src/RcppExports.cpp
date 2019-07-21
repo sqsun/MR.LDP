@@ -12,6 +12,7 @@
 #include <vector>
 #include "pdsoft.hpp"
 #include "Pxvb.hpp"
+#include "Pxvb_block.hpp"
 #include "Gibbspar.hpp"
 #include "ReadGeneFile.hpp"
 #include "CalCorr.hpp"
@@ -424,6 +425,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// MRLDP_RealPXvb_block
+Rcpp::List MRLDP_RealPXvb_block(arma::ivec bp, arma::ivec chr, arma::uvec avbIndex, std::string block_file, std::string stringname3, arma::vec bh1, arma::vec bh2, arma::vec se1, arma::vec se2, arma::vec& gamma, arma::vec& alpha, double& beta0, double& sgga2, double& sgal2, int coreNum, double lam, const int& constr, const double& epsStopLogLik, const int& maxIter, const int& model);
+RcppExport SEXP _MR_LDP_MRLDP_RealPXvb_block(SEXP bpSEXP, SEXP chrSEXP, SEXP avbIndexSEXP, SEXP block_fileSEXP, SEXP stringname3SEXP, SEXP bh1SEXP, SEXP bh2SEXP, SEXP se1SEXP, SEXP se2SEXP, SEXP gammaSEXP, SEXP alphaSEXP, SEXP beta0SEXP, SEXP sgga2SEXP, SEXP sgal2SEXP, SEXP coreNumSEXP, SEXP lamSEXP, SEXP constrSEXP, SEXP epsStopLogLikSEXP, SEXP maxIterSEXP, SEXP modelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::ivec >::type bp(bpSEXP);
+    Rcpp::traits::input_parameter< arma::ivec >::type chr(chrSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type avbIndex(avbIndexSEXP);
+    Rcpp::traits::input_parameter< std::string >::type block_file(block_fileSEXP);
+    Rcpp::traits::input_parameter< std::string >::type stringname3(stringname3SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type bh1(bh1SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type bh2(bh2SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type se1(se1SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type se2(se2SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gamma(gammaSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double& >::type beta0(beta0SEXP);
+    Rcpp::traits::input_parameter< double& >::type sgga2(sgga2SEXP);
+    Rcpp::traits::input_parameter< double& >::type sgal2(sgal2SEXP);
+    Rcpp::traits::input_parameter< int >::type coreNum(coreNumSEXP);
+    Rcpp::traits::input_parameter< double >::type lam(lamSEXP);
+    Rcpp::traits::input_parameter< const int& >::type constr(constrSEXP);
+    Rcpp::traits::input_parameter< const double& >::type epsStopLogLik(epsStopLogLikSEXP);
+    Rcpp::traits::input_parameter< const int& >::type maxIter(maxIterSEXP);
+    Rcpp::traits::input_parameter< const int& >::type model(modelSEXP);
+    rcpp_result_gen = Rcpp::wrap(MRLDP_RealPXvb_block(bp, chr, avbIndex, block_file, stringname3, bh1, bh2, se1, se2, gamma, alpha, beta0, sgga2, sgal2, coreNum, lam, constr, epsStopLogLik, maxIter, model));
+    return rcpp_result_gen;
+END_RCPP
+}
 // MRLDP_RealParPXvb
 Rcpp::List MRLDP_RealParPXvb(arma::ivec bp, arma::ivec chr, arma::uvec avbIndex, std::string block_file, std::string stringname3, arma::vec bh1, arma::vec bh2, arma::vec se1, arma::vec se2, arma::vec& gamma, arma::vec& alpha, double& beta0, double& sgga2, double& sgal2, int coreNum, double lam, const int& constr, const double& epsStopLogLik, const int& maxIter, const int& model);
 RcppExport SEXP _MR_LDP_MRLDP_RealParPXvb(SEXP bpSEXP, SEXP chrSEXP, SEXP avbIndexSEXP, SEXP block_fileSEXP, SEXP stringname3SEXP, SEXP bh1SEXP, SEXP bh2SEXP, SEXP se1SEXP, SEXP se2SEXP, SEXP gammaSEXP, SEXP alphaSEXP, SEXP beta0SEXP, SEXP sgga2SEXP, SEXP sgal2SEXP, SEXP coreNumSEXP, SEXP lamSEXP, SEXP constrSEXP, SEXP epsStopLogLikSEXP, SEXP maxIterSEXP, SEXP modelSEXP) {
@@ -722,6 +753,54 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// PXvbfunM1_block
+List PXvbfunM1_block(arma::field<mat> F4Rblock, arma::umat block_inf, uword nblocks, arma::vec bh1, arma::vec bh2, arma::vec se1, arma::vec se2, arma::vec mu, double& sgga2, double beta0, const int& constr, const double& epsStopLogLik, const int& maxIter);
+RcppExport SEXP _MR_LDP_PXvbfunM1_block(SEXP F4RblockSEXP, SEXP block_infSEXP, SEXP nblocksSEXP, SEXP bh1SEXP, SEXP bh2SEXP, SEXP se1SEXP, SEXP se2SEXP, SEXP muSEXP, SEXP sgga2SEXP, SEXP beta0SEXP, SEXP constrSEXP, SEXP epsStopLogLikSEXP, SEXP maxIterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::field<mat> >::type F4Rblock(F4RblockSEXP);
+    Rcpp::traits::input_parameter< arma::umat >::type block_inf(block_infSEXP);
+    Rcpp::traits::input_parameter< uword >::type nblocks(nblocksSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type bh1(bh1SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type bh2(bh2SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type se1(se1SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type se2(se2SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< double& >::type sgga2(sgga2SEXP);
+    Rcpp::traits::input_parameter< double >::type beta0(beta0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type constr(constrSEXP);
+    Rcpp::traits::input_parameter< const double& >::type epsStopLogLik(epsStopLogLikSEXP);
+    Rcpp::traits::input_parameter< const int& >::type maxIter(maxIterSEXP);
+    rcpp_result_gen = Rcpp::wrap(PXvbfunM1_block(F4Rblock, block_inf, nblocks, bh1, bh2, se1, se2, mu, sgga2, beta0, constr, epsStopLogLik, maxIter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// PXvbfunM2_block
+List PXvbfunM2_block(arma::field<mat> F4Rblock, arma::umat block_inf, uword nblocks, arma::vec bh1, arma::vec bh2, arma::vec se1, arma::vec se2, arma::vec mu, arma::vec muA, double& sgga2, double& sgal2, double beta0, const int& constr, const double& epsStopLogLik, const int& maxIter);
+RcppExport SEXP _MR_LDP_PXvbfunM2_block(SEXP F4RblockSEXP, SEXP block_infSEXP, SEXP nblocksSEXP, SEXP bh1SEXP, SEXP bh2SEXP, SEXP se1SEXP, SEXP se2SEXP, SEXP muSEXP, SEXP muASEXP, SEXP sgga2SEXP, SEXP sgal2SEXP, SEXP beta0SEXP, SEXP constrSEXP, SEXP epsStopLogLikSEXP, SEXP maxIterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::field<mat> >::type F4Rblock(F4RblockSEXP);
+    Rcpp::traits::input_parameter< arma::umat >::type block_inf(block_infSEXP);
+    Rcpp::traits::input_parameter< uword >::type nblocks(nblocksSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type bh1(bh1SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type bh2(bh2SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type se1(se1SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type se2(se2SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type muA(muASEXP);
+    Rcpp::traits::input_parameter< double& >::type sgga2(sgga2SEXP);
+    Rcpp::traits::input_parameter< double& >::type sgal2(sgal2SEXP);
+    Rcpp::traits::input_parameter< double >::type beta0(beta0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type constr(constrSEXP);
+    Rcpp::traits::input_parameter< const double& >::type epsStopLogLik(epsStopLogLikSEXP);
+    Rcpp::traits::input_parameter< const int& >::type maxIter(maxIterSEXP);
+    rcpp_result_gen = Rcpp::wrap(PXvbfunM2_block(F4Rblock, block_inf, nblocks, bh1, bh2, se1, se2, mu, muA, sgga2, sgal2, beta0, constr, epsStopLogLik, maxIter));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getLineNum
 int getLineNum(std::string filename);
 RcppExport SEXP _MR_LDP_getLineNum(SEXP filenameSEXP) {
@@ -832,6 +911,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MR_LDP_MRLDP_SimGibbspar", (DL_FUNC) &_MR_LDP_MRLDP_SimGibbspar, 16},
     {"_MR_LDP_MRLDP_RealVb", (DL_FUNC) &_MR_LDP_MRLDP_RealVb, 20},
     {"_MR_LDP_MRLDP_RealPXvb", (DL_FUNC) &_MR_LDP_MRLDP_RealPXvb, 20},
+    {"_MR_LDP_MRLDP_RealPXvb_block", (DL_FUNC) &_MR_LDP_MRLDP_RealPXvb_block, 20},
     {"_MR_LDP_MRLDP_RealParPXvb", (DL_FUNC) &_MR_LDP_MRLDP_RealParPXvb, 20},
     {"_MR_LDP_MRLDP_RealVBMg", (DL_FUNC) &_MR_LDP_MRLDP_RealVBMg, 19},
     {"_MR_LDP_MRLDP_RealMggibbs", (DL_FUNC) &_MR_LDP_MRLDP_RealMggibbs, 18},
@@ -844,6 +924,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MR_LDP_PXvbfunM2", (DL_FUNC) &_MR_LDP_PXvbfunM2, 13},
     {"_MR_LDP_VBMgM2", (DL_FUNC) &_MR_LDP_VBMgM2, 12},
     {"_MR_LDP_MgMgib2", (DL_FUNC) &_MR_LDP_MgMgib2, 12},
+    {"_MR_LDP_PXvbfunM1_block", (DL_FUNC) &_MR_LDP_PXvbfunM1_block, 13},
+    {"_MR_LDP_PXvbfunM2_block", (DL_FUNC) &_MR_LDP_PXvbfunM2_block, 15},
     {"_MR_LDP_getLineNum", (DL_FUNC) &_MR_LDP_getLineNum, 1},
     {"_MR_LDP_ReadSNPinfo", (DL_FUNC) &_MR_LDP_ReadSNPinfo, 8},
     {"_MR_LDP_Read_summarystat", (DL_FUNC) &_MR_LDP_Read_summarystat, 10},

@@ -12,6 +12,7 @@
 #include <vector>
 #include "pdsoft.hpp"
 #include "Pxvb.hpp"
+#include "Pxvb_block.hpp"
 #include "Gibbspar.hpp"
 #include "ReadGeneFile.hpp"
 #include "CalCorr.hpp"
@@ -295,6 +296,56 @@ Rcpp::List MRLDP_RealPXvb(arma::ivec bp, arma::ivec chr, arma::uvec avbIndex, st
 
   List output = List::create(
     Rcpp::Named("R") = R,
+    Rcpp::Named("tstat") = tstat,
+    Rcpp::Named("sgga2") = sgga2,
+    Rcpp::Named("sgal2") = sgal2,
+    Rcpp::Named("beta0") = beta0,
+    Rcpp::Named("diff") = diff,
+    Rcpp::Named("loglik") = loglik,
+    Rcpp::Named("Iteration") = Iteration
+  );
+  return output;
+}
+
+
+// [[Rcpp::export]]
+Rcpp::List MRLDP_RealPXvb_block(arma::ivec bp, arma::ivec chr, arma::uvec avbIndex, std::string block_file,
+                          std::string stringname3,
+                          arma::vec bh1, arma::vec bh2, arma::vec se1, arma::vec se2,
+                          arma::vec &gamma, arma::vec &alpha, double &beta0, double &sgga2, double &sgal2,
+                          int coreNum, double lam, const int&constr, const double &epsStopLogLik, const int& maxIter, const int& model){
+  
+  List Rblockres = Cal_blockR(bp, chr, avbIndex, block_file, stringname3, coreNum, lam);
+  arma::field<mat> F4Rblock = Rblockres["F4Rblock"];
+  arma::umat block_inf = Rblockres["block_inf"];
+  uword nblocks = Rblockres["nblocks"];
+  
+  double tstat, Iteration, diff;
+  vec loglik;
+  if(model==1){
+    List PXvbResult1_block = PXvbfunM1_block(F4Rblock, block_inf,  nblocks,
+                                             bh1, bh2, se1, se2, gamma, sgga2, beta0, 
+                                             constr, epsStopLogLik, maxIter);
+    beta0 = PXvbResult1_block["beta0"];
+    tstat = PXvbResult1_block["tstat"];
+    sgga2 = PXvbResult1_block["sgga2"];
+    diff = PXvbResult1_block["diff"];
+    Iteration = PXvbResult1_block["Iteration"];
+    loglik = as<vec>(PXvbResult1_block["loglik"]);
+  }else if(model==2){
+    List PXvbResult2_block = PXvbfunM2_block(F4Rblock, block_inf, nblocks, bh1, bh2, se1, se2,
+                                             gamma, alpha, sgga2, sgal2, beta0, constr, epsStopLogLik, maxIter); 
+                                             
+    beta0 = PXvbResult2_block["beta0"];
+    tstat = PXvbResult2_block["tstat"];
+    sgga2 = PXvbResult2_block["sgga2"];
+    sgal2 = PXvbResult2_block["sgal2"];
+    diff = PXvbResult2_block["diff"];
+    Iteration = PXvbResult2_block["Iteration"];
+    loglik = as<vec>(PXvbResult2_block["loglik"]);
+  }
+  
+  List output = List::create(
     Rcpp::Named("tstat") = tstat,
     Rcpp::Named("sgga2") = sgga2,
     Rcpp::Named("sgal2") = sgal2,
