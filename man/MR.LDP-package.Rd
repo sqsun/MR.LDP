@@ -13,7 +13,7 @@
 The DESCRIPTION file:
 \packageDESCRIPTION{MR.LDP}
 \packageIndices{MR.LDP}
-~~ An overview of how to use the package, including the most important functions ~~
+An overview of how to use the package, including the most important functions ~~
 }
 \author{
 \packageAuthor{MR.LDP}
@@ -21,15 +21,15 @@ The DESCRIPTION file:
 Maintainer: \packageMaintainer{MR.LDP}
 }
 \references{
-~~ Literature or other references for background information ~~
+Literature or other references for background information
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R ~~
-~~ documentation directory ~~
+% Optionally other standard keywords, one per line, from file KEYWORDS in the R
+documentation directory
 \keyword{ package }
 \seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
+Optional links to other man pages, e.g.
+\code{\link[<pkg>:<pkg>-package]{<pkg>}}
 }
 \examples{
-~~ simple examples of the most important functions ~~
+simple examples of the most important functions
 }
